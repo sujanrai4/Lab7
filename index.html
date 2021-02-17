@@ -84,7 +84,13 @@
       // The main difference from fetchOne() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
-        // TODO
+        document.getElementById('recordForm').style.display = "none";
+
+        fetch(document.getElementById('endpoint').value)
+          .then(response => response.json())
+          .then(data => document.getElementById('output').value = JSON.stringify(data));
+          
+          
       }
 
       // This function should fetch one entry from the given endpoint.
@@ -92,7 +98,15 @@
       // The main difference from fetchAll() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
-        // TODO
+        document.getElementById('recordForm').style.display = "none";
+        let id = Number(prompt('Enter record id'));
+        let fullEndpoint = document.getElementById('endpoint').value;
+          fetch(fullEndpoint + '/' + id)
+            .then(response => response.json())
+            .then(data => document.getElementById('output').value = JSON.stringify(data))
+            .catch(err => {
+              console.log(err)
+            })
       }
 
       // This function should use fetch to create one entry in the given endpoint.
@@ -100,6 +114,24 @@
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function createRecord() {
+        document.getElementById('recordForm').style.display = "block";
+        document.getElementById('recordIDcontainer').style.display = "none";
+
+        fetch(document.getElementById('endpoint').value, {
+          method: "POST",
+          body: JSON.stringify({
+            Author: document.getElementById('author').value,
+            Title: document.getElementById('title').value,
+          }),
+          headers: {
+            "content-type": "application/json; charset=UTF-8"
+          }
+        })
+          .then(response => response.json())
+          .then(data => document.getElementById('recordForm').value = JSON.stringify(data))
+          .catch(err => {
+            console.log(err)
+          })
         // TODO
       }
 
@@ -108,7 +140,27 @@
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function updateRecord() {
-        // TODO
+        //document.getElementById('output').style.display = "none";
+        document.getElementById('recordForm').style.display = "block";
+        document.getElementById('recordIDcontainer').style.display = "block";
+        let fullEndpoint = document.getElementById('endpoint').value;
+        let updateId = document.getElementById('recordID').value;
+        fetch(fullEndpoint + '/' + updateId, {
+          method: "PUT",
+          body: JSON.stringify({
+            Author: document.getElementById('author').value,
+            Title: document.getElementById('title').value,
+            //Id: document.getElementById('recordID').value,
+          }),
+          headers: {
+            "content-type": "application/json; charset=UTF-8"
+          }
+        })
+          .then(response => response.json())
+          .then(data => document.getElementById('recordForm').value = JSON.stringify(data)) 
+          .catch(err => {
+            console.log(err)
+          })
       }
 
       // This function should use fetch to delete one existing entry in the given endpoint.
@@ -117,6 +169,19 @@
       // request; check the writeup to view the URL pattern for get one and delete. THERE IS NO 
       // delete all, only delete one.
       function deleteRecord() {
+        document.getElementById('recordForm').style.display = "none";
+        document.getElementById('recordIDcontainer').style.display = "none";
+
+        let id = Number(prompt('Enter Record ID'));
+        let fullEndpoint = document.getElementById('endpoint').value;
+          fetch(fullEndpoint + '/' + id, {
+            method: 'DELETE',
+          })
+            .then(response => response.json())
+            .catch(err => {
+              console.log(err)
+            })
+            //.then(data => document.getElementById('output').value = JSON.stringify(data)) 
         // TODO
       }
 
