@@ -1,5 +1,16 @@
 {
-  "posts": [],
+  "posts": [
+    {
+      "Author": "Yuwi",
+      "Title": "sleeping",
+      "id": 1
+    },
+    {
+      "Author": "Ama",
+      "Title": "sleeping",
+      "id": 2
+    }
+  ],
   "comments": [],
   "profile": {
     "name": "typicode"
