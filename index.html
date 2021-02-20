@@ -45,7 +45,7 @@
     <form id="recordForm">
       <div>
         <label for="author">Author</label>
-        <input type="text" name="author" id="author" />
+        <input type="text" name="author" id="author"/>
       </div>
 
       <div>
@@ -84,10 +84,9 @@
       // The main difference from fetchOne() will be the URL you request from; check
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchAll() {
-        //document.getElementById('recordForm').style.display = "none";
-        document.getElementById('recordForm').style.display = "none";
         document.getElementById('output').style.display = "block";
-
+        document.getElementById('recordForm').style.display = "none";
+        document.getElementById('recordIDcontainer').style.display = "none";
 
         fetch(document.getElementById('endpoint').value) 
           .then(response => response.json())
@@ -102,15 +101,23 @@
       // the writeup to view the URL pattern for fetch one and fetch all
       function fetchOne() {
         document.getElementById('recordForm').style.display = "none";
+        document.getElementById('recordIDcontainer').style.display = "none";
+        document.getElementById('output').style.display = "block";
+
         let id = Number(prompt('Enter record id'));
         let fullEndpoint = document.getElementById('endpoint').value;
           fetch(fullEndpoint + '/' + id)
-          
-            .then(response => response.json())
-
-            .then(data => document.getElementById('output').value = JSON.stringify(data))
+            .then(response => {
+              if(!response.ok) {
+                //console.log('HTTP Error. status code: ' + response.status);
+                document.getElementById('output').value =  "ID " + id + " is Not Found: " + response.status;
+                return;
+              } 
+              response.json().then(data => document.getElementById('output').value = JSON.stringify(data));
+            })
             .catch(err => {
-              console.log(err)
+              console.log(err);
+              document.getElementById('output').value = JSON.stringify(err);
             })
       }
 
@@ -119,11 +126,14 @@
       // The main difference from updateRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function createRecord(arg) {
-        document.getElementById('recordForm').style.display = "block";
-        document.getElementById('recordIDcontainer').style.display = "none";
-        document.getElementById('output').style.display = "none";
+        if(arg === 'show') {
+            document.getElementById('recordForm').style.display = "block";
+            document.getElementById('recordIDcontainer').style.display = "none";
+            document.getElementById('output').style.display = "none";
+        }
         if(arg === 'submit') {
           document.getElementById('output').style.display = "block";
+
           fetch(document.getElementById('endpoint').value, {
             method: "POST",
             body: JSON.stringify({
@@ -135,7 +145,6 @@
             }
           })
             .then(response => response.json())
-
             .then(data => document.getElementById('output').value = JSON.stringify(data))
             .catch(err => {
               console.log(err)
@@ -150,29 +159,34 @@
       // The main difference from createRecord() will be the URL you send data to; check
       // the writeup to view the URL pattern for create and update
       function updateRecord(arg) {
-        //document.getElementById('output').style.display = "none";
-        document.getElementById('recordForm').style.display = "block";
-        document.getElementById('output').style.display = "none";
-        document.getElementById('recordIDcontainer').style.display = "block";
+         //document.getElementById('output').style.display = "none";
+        if(arg === 'show') {
+            document.getElementById('recordForm').style.display = "block";
+            document.getElementById('recordIDcontainer').style.display = "block";
+            document.getElementById('output').style.display = "none";
+        }
         let fullEndpoint = document.getElementById('endpoint').value;
         let updateId = document.getElementById('recordID').value;
-        //let res = fetch(fullEndpoint + '/' + updateId);
         if(arg === 'submit' ){
           document.getElementById('output').style.display = "block";
+
           fetch(fullEndpoint + '/' + updateId, {
             method: "PUT",
             body: JSON.stringify({
               Author: document.getElementById('author').value,
               Title: document.getElementById('title').value,
-              //Id: document.getElementById('recordID').value,
             }),
             headers: {
               "content-type": "application/json; charset=UTF-8"
             }
           })
-            .then(response => response.json())
- 
-            .then(data => document.getElementById('output').value = JSON.stringify(data)) 
+            .then(response => {
+              if(!response.ok) {
+                document.getElementById('output').value = "ID " + updateId + " Not Found: " + response.status;
+                return;
+              }
+              response.json().then(data => document.getElementById('output').value = JSON.stringify(data));
+          })
             .catch(err => {
               console.log(err)
             })
@@ -193,7 +207,13 @@
           fetch(fullEndpoint + '/' + id, {
             method: 'DELETE',
           })
-            .then(response => response.json())
+            .then(response => {
+              if(!response.ok) {
+                document.getElementById('output').value = "ID " + id + " Not Found: " + response.status;
+                return; 
+              }
+              response.json().then(data => document.getElementById('output').value = JSON.stringify(data));
+            })
             .catch(err => {
               console.log(err)
             })
